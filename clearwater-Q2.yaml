@@ -1,0 +1,274 @@
+tosca_definitions_version: cloudify_dsl_1_2
+
+########################################################
+
+imports:
+  - http://www.getcloudify.org/spec/cloudify/3.3.1/types.yaml
+  - http://www.getcloudify.org/spec/openstack-plugin/1.3.1/plugin.yaml
+  - http://www.getcloudify.org/spec/diamond-plugin/1.3.1/plugin.yaml
+
+########################################################
+plugins:
+    hss-plugin:
+        executor: host_agent
+        source: hss-plugin
+
+workflows:
+  config-hss:
+        mapping: hss-plugin.hss_plugin.tasks.config_hss
+        parameters:
+            endpoint:
+                description: parameters passed form another deployment
+
+
+########################################################
+inputs:
+    server:
+        default:
+            image: ba1fec4c-0330-49e4-81ae-2b1f532a8492 # Ubuntu Server 14.04
+            flavor_name: 3
+    dns_ip:
+        description: DNS IP address
+    
+########################################################
+node_types:
+    policy_node_type:
+       derived_from: cloudify.nodes.SoftwareComponent
+       properties:
+          nodes_to_monitor:
+             default: []
+       interfaces:
+          cloudify.interfaces.lifecycle:
+             start:
+                implementation: scripts/policy-start.sh
+                executor: central_deployment_agent
+             stop:
+                implementation: scripts/policy-stop.sh
+                executor: central_deployment_agent
+########################################################
+node_templates:
+    a_node:
+        type: cloudify.nodes.Compute
+        properties:
+           install_agent: false
+
+    policy_node:
+        type: policy_node_type
+        relationships:
+           - target: bono_vm
+             type: cloudify.relationships.depends_on
+           - target: sprout_vm
+             type: cloudify.relationships.depends_on
+           - target: a_node
+             type: cloudify.relationships.contained_in
+        properties:
+           nodes_to_monitor:
+              - bono_vm
+              - sprout_vm
+
+    bono_ip:
+        type: cloudify.openstack.nodes.FloatingIP
+    ellis_ip:
+        type: cloudify.openstack.nodes.FloatingIP
+
+    bono_vm:
+        type: cloudify.openstack.nodes.Server 
+        properties:
+           server: { get_input: server }
+           cloudify_agent: { get_input: cloudify_agent }
+        relationships:
+            -   type: cloudify.openstack.server_connected_to_floating_ip
+                target: bono_ip
+            -   type: cloudify.openstack.server_connected_to_security_group
+                target: All_ports_open
+        interfaces:          
+            cloudify.interfaces.monitoring_agent:
+               install:
+                  implementation: diamond.diamond_agent.tasks.install
+                  inputs:
+                     diamond_config: 
+                        interval: 5
+               start: diamond.diamond_agent.tasks.start
+               stop: diamond.diamond_agent.tasks.stop
+               uninstall: diamond.diamond_agent.tasks.uninstall
+
+            cloudify.interfaces.monitoring:
+               start:
+                  implementation: diamond.diamond_agent.tasks.add_collectors
+                  inputs:
+                     collectors_config:
+                           CPUCollector: {}
+
+    ellis_vm:
+        type: cloudify.openstack.nodes.Server
+        properties:
+           server: { get_input: server }
+           cloudify_agent: { get_input: cloudify_agent }
+        relationships:
+            -   type: cloudify.openstack.server_connected_to_floating_ip
+                target: ellis_ip
+            -   type: cloudify.openstack.server_connected_to_security_group
+                target: All_ports_open
+        
+    sprout_vm:
+        type: cloudify.openstack.nodes.Server
+        properties:
+           server: { get_input: server }
+           cloudify_agent: { get_input: cloudify_agent }
+        relationships:
+            -   type: cloudify.openstack.server_connected_to_security_group
+                target: All_ports_open
+
+        interfaces:
+            cloudify.interfaces.monitoring_agent:
+               install:
+                  implementation: diamond.diamond_agent.tasks.install
+                  inputs:
+                     diamond_config:
+                        interval: 5
+               start: diamond.diamond_agent.tasks.start
+               stop: diamond.diamond_agent.tasks.stop
+               uninstall: diamond.diamond_agent.tasks.uninstall
+
+            cloudify.interfaces.monitoring:
+               start:
+                  implementation: diamond.diamond_agent.tasks.add_collectors
+                  inputs:
+                     collectors_config:
+                           CPUCollector: {}
+
+    homer_vm:
+        type: cloudify.openstack.nodes.Server
+        properties:
+           server: { get_input: server }
+           cloudify_agent: { get_input: cloudify_agent }
+        relationships:
+            -   type: cloudify.openstack.server_connected_to_security_group
+                target: All_ports_open
+
+    homestead_vm:
+        type: cloudify.openstack.nodes.Server
+        properties:
+           server: { get_input: server }
+           cloudify_agent: { get_input: cloudify_agent }
+        relationships:
+            -   type: cloudify.openstack.server_connected_to_security_group
+                target: All_ports_open
+
+    ralf_vm:
+        type: cloudify.openstack.nodes.Server
+        properties:
+           server: { get_input: server }
+           cloudify_agent: { get_input: cloudify_agent }
+        relationships:
+            -   type: cloudify.openstack.server_connected_to_security_group
+                target: All_ports_open
+
+    All_ports_open:
+        type: cloudify.openstack.nodes.SecurityGroup
+        properties:
+            security_group:
+                name: All_ports_open
+            rules: 
+                - remote_ip_prefix: 0.0.0.0/0
+                  port_range_min: 1
+                  port_range_max: 65535
+                  protocol: tcp
+                - remote_ip_prefix: 0.0.0.0/0
+                  port_range_min: 1
+                  port_range_max: 65535
+                  protocol: udp
+
+########################################################
+    bono_app:
+        type: cloudify.nodes.SoftwareComponent
+        interfaces:
+           cloudify.interfaces.lifecycle:
+              create:
+                 implementation: scripts/bono-install.sh
+                 inputs:
+                    public_ip: { get_attribute: [ bono_ip, floating_ip_address ] }
+                    dns_ip: { get_input: dns_ip }
+              reconfigure: scripts/bono-start.sh
+              stop: scripts/bono-stop.sh
+        relationships:
+            -  type: cloudify.relationships.contained_in
+               target: bono_vm
+
+    ellis_app:
+        type: cloudify.nodes.SoftwareComponent
+        interfaces:
+           cloudify.interfaces.lifecycle:
+              create:
+                 implementation: scripts/ellis-install.sh
+                 inputs:
+                    public_ip: { get_attribute: [ellis_ip, floating_ip_address] }
+                    dns_ip: { get_input: dns_ip }
+              reconfigure: scripts/ellis-start.sh
+              stop: scripts/ellis-stop.sh
+        relationships:
+            -  type: cloudify.relationships.contained_in
+               target: ellis_vm
+
+    homer_app:
+        type: cloudify.nodes.SoftwareComponent
+        interfaces:
+           cloudify.interfaces.lifecycle:
+              create:
+                 implementation: scripts/homer-install.sh
+                 inputs:
+                    dns_ip: { get_input: dns_ip }
+              reconfigure: scripts/homer-start.sh
+              stop: scripts/homer-stop.sh
+        relationships:
+            -  type: cloudify.relationships.contained_in
+               target: homer_vm
+
+    homestead_app:
+        type: cloudify.nodes.SoftwareComponent 
+        interfaces:
+           cloudify.interfaces.lifecycle:
+              create:
+                 implementation: scripts/homer-install.sh
+                 inputs:
+                    dns_ip: { get_input: dns_ip }
+              reconfigure: scripts/homestead-start.sh
+              stop: scripts/homestead-stop.sh
+        relationships:
+            -  type: cloudify.relationships.contained_in
+               target: homestead_vm
+
+    ralf_app:
+        type: cloudify.nodes.SoftwareComponent
+        interfaces:
+           cloudify.interfaces.lifecycle:
+              create:
+                 implementation: scripts/homer-install.sh
+                 inputs:
+                    dns_ip: { get_input: dns_ip }
+              reconfigure: scripts/ralf-start.sh
+              stop: scripts/ralf-stop.sh
+        relationships:
+            -  type: cloudify.relationships.contained_in
+               target: ralf_vm
+
+    sprout_app:
+        type: cloudify.nodes.SoftwareComponent 
+        interfaces:
+           cloudify.interfaces.lifecycle:
+              create:
+                 implementation: scripts/sprout-install.sh
+                 inputs:
+                    dns_ip: { get_input: dns_ip }
+              reconfigure: scripts/sprout-start.sh
+              stop: scripts/sprout-stop.sh
+        relationships:
+            -  type: cloudify.relationships.contained_in
+               target: sprout_vm
+
+outputs:
+  endpoint:
+    description: vIMS application endpoint
+    value:
+      bono_address: { get_attribute: [ bono_ip, floating_ip_address ] }
+      ellis_address: { get_property: [ ellis_ip, floating_ip_address ] }
