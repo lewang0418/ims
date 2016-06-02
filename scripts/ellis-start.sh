@@ -46,5 +46,5 @@ sudo bash -c "export PATH=/usr/share/clearwater/ellis/env/bin:$PATH ;
               python create_numbers.py --start 6505550000 --count 1000"
 
 
-
-
+sudo service clearwater-infrastructure restart
+sudo service ellis stop

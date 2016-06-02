@@ -34,3 +34,5 @@ EOF'
 sudo /usr/share/clearwater/clearwater-config-manager/scripts/upload_shared_config
 
 
+sudo service clearwater-infrastructure restart
+sudo service homestead stop

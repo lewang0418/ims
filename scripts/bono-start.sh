@@ -38,3 +38,9 @@ sudo /usr/share/clearwater/clearwater-config-manager/scripts/upload_shared_confi
 
 
 
+
+
+
+sudo service clearwater-infrastructure restart
+sudo service bono stop
+

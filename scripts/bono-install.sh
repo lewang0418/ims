@@ -48,6 +48,12 @@ search example.com
 EOF
 sudo resolvconf -u
 
+# Enable logging
+cat << EOF | sudo -E tee -a /etc/clearwater/user_settings
+log_level=5
+EOF
+
+# Update DNS
 cat > /home/ubuntu/dnsupdatefile << EOF
 server ${dns_ip}
 zone example.com
@@ -61,7 +67,6 @@ update add _sip._udp.example.com. 30 SRV     0 0 5060 bono-0
 send
 EOF
 
-# Update DNS
 retries=0
 while ! { sudo nsupdate /home/ubuntu/dnsupdatefile
 } && [ $retries -lt 10 ]
@@ -72,17 +77,19 @@ do
   sleep 5
 done
 
+# configure node to identify its DNS server
+# http://clearwater.readthedocs.io/en/stable/Clearwater_DNS_Usage.html?highlight=dns
+sudo -E bash -c 'cat > /etc/dnsmasq.resolv.conf << EOF
+nameserver ${dns_ip}
+EOF'
+
+sudo -E bash -c 'cat >> /etc/default/dnsmasq << EOF
+RESOLV_CONF=/etc/dnsmasq.resolv.conf
+EOF'
+
+sudo service dnsmasq restart
+
+
+# Set dns_ip in ctx
 ctx instance runtime-properties public_ip ${public_ip}
 ctx instance runtime-properties dns_ip ${dns_ip}
-
-
-
-#update add example.com. 30 A ${public_ip}
-#update add example.com. 30 NAPTR   1 1 "S" "SIP+D2T" "" _sip._tcp
-#update add example.com. 30 NAPTR   2 1 "S" "SIP+D2U" "" _sip._udp
-#update add _sip._tcp.example.com. 30 SRV     0 0 5060 bono-0
-#update add _sip._udp.example.com. 30 SRV     0 0 5060 bono-0
-#update add pcscf.example.com.                30 IN A ${public_ip}
-#update add _sip.pcscf.example.com              30 SRV 0 0 4060 pcscf
-#update add _sip._udp.pcscf.example.com         30 SRV 0 0 4060 pcscf
-#update add _sip._tcp.pcscf.example.com         30 SRV 0 0 4060 pcscf

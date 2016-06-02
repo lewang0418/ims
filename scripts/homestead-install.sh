@@ -23,6 +23,11 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get install clearwater-cassandra --yes -
 sudo DEBIAN_FRONTEND=noninteractive apt-get install homestead homestead-prov --yes --force-yes -o DPkg::options::=--force-confnew
 sudo DEBIAN_FRONTEND=noninteractive apt-get install clearwater-management --yes --force-yes
 
+# Enable logging
+cat << EOF | sudo -E tee -a /etc/clearwater/user_settings
+log_level=5
+EOF
+
 # Update DNS
 ctx logger info "Updating DNS..."
 
@@ -57,4 +62,17 @@ do
 done
 
 
+# configure node to identify its DNS server
+# http://clearwater.readthedocs.io/en/stable/Clearwater_DNS_Usage.html?highlight=dns
+sudo -E bash -c 'cat > /etc/dnsmasq.resolv.conf << EOF
+nameserver ${dns_ip}
+EOF'
+
+sudo -E bash -c 'cat >> /etc/default/dnsmasq << EOF
+RESOLV_CONF=/etc/dnsmasq.resolv.conf
+EOF'
+
+sudo service dnsmasq restart
+
+# Set dns_ip in ctx
 ctx instance runtime-properties dns_ip ${dns_ip}
