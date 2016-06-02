@@ -12,9 +12,9 @@ ralf_hostname=ralf.example.com:10888
 xdms_hostname=homer.example.com:7888
 
 # HSS configuration
-hss_hostname=${hss_ip}
+hss_hostname=hss.example.com
 hss_realm=example.com
-hss_port=${hss_port}
+hss_port=3868
 
 # Email server configuration
 smtp_smarthost=localhost

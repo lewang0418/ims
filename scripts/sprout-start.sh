@@ -1,5 +1,6 @@
 #!/bin/bash
 ctx logger info "Updating HSS ${hss_ip} ${hss_port}"
+
 sudo -E bash -c 'cat > /etc/clearwater/shared_config << EOF
 # Deployment definitions
 home_domain=example.com
@@ -10,9 +11,9 @@ ralf_hostname=ralf.example.com:10888
 xdms_hostname=homer.example.com:7888
 
 # HSS configuration
-hss_hostname=$(hss_ip)
+hss_hostname=hss.example.com
 hss_realm=example.com
-hss_port=$(hss_port)
+hss_port=3868
 
 # Email server configuration
 smtp_smarthost=localhost
