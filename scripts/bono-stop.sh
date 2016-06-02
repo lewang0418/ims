@@ -12,6 +12,10 @@ zone example.com
 key example.com 8r6SIIX/cWE6b0Pe8l2bnc/v5vYbMSYvj+jQPP4bWe+CXzOpojJGrXI7iiustDQdWtBHUpWxweiHDWvLIp6/zw==
 update delete bono-0.example.com. 30 A ${public_ip}
 update delete bono.example.com. 30 A ${public_ip}
+update delete example.com. 30 NAPTR   1 1 "S" "SIP+D2T" "" _sip._tcp
+update delete example.com. 30 NAPTR   2 1 "S" "SIP+D2U" "" _sip._udp
+update delete _sip._tcp.example.com. 30 SRV     0 0 5060 bono-0
+update delete _sip._udp.example.com. 30 SRV     0 0 5060 bono-0
 send
 EOF
 

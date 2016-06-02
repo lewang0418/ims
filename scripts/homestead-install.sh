@@ -17,37 +17,6 @@ public_hostname=homestead-0.example.com
 etcd_cluster=$(hostname -I)
 EOF
 
-<<<<<<< HEAD:blueprints/clearwater-scripts-plugin-blueprint/scripts/homestead.sh
-sudo -E bash -c 'cat > /etc/clearwater/shared_config << EOF
-# Deployment definitions
-home_domain=example.com
-sprout_hostname=sprout.example.com
-hs_hostname=hs.example.com:8888
-hs_provisioning_hostname=hs.example.com:8889
-ralf_hostname=ralf.example.com:10888
-xdms_hostname=homer.example.com:7888
-
-# Email server configuration
-smtp_smarthost=localhost
-smtp_username=username
-smtp_password=password
-email_recovery_sender=clearwater@example.org
-
-# Keys
-signup_key=secret
-turn_workaround=secret
-ellis_api_key=secret
-ellis_cookie_key=secret
-
-# eheiris: to use external HSS. TBD use FQDN for HSS.. 
-# HSS configuration
-hss_hostname=10.67.71.40
-hss_port=3868
-EOF'
-
-=======
->>>>>>> cross-domain:blueprints/clearwater-scripts-plugin-blueprint/scripts/homestead-install.sh
-
 # Now install the software.
 # "-o DPkg::options::=--force-confnew" works around https://github.com/Metaswitch/clearwater-infrastructure/issues/186.
 sudo DEBIAN_FRONTEND=noninteractive apt-get install clearwater-cassandra --yes --force-yes -o DPkg::options::=--force-confnew

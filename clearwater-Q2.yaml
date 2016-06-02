@@ -75,7 +75,6 @@ node_templates:
         type: cloudify.openstack.nodes.Server 
         properties:
            server: { get_input: server }
-           cloudify_agent: { get_input: cloudify_agent }
         relationships:
             -   type: cloudify.openstack.server_connected_to_floating_ip
                 target: bono_ip
@@ -103,7 +102,6 @@ node_templates:
         type: cloudify.openstack.nodes.Server
         properties:
            server: { get_input: server }
-           cloudify_agent: { get_input: cloudify_agent }
         relationships:
             -   type: cloudify.openstack.server_connected_to_floating_ip
                 target: ellis_ip
@@ -114,7 +112,6 @@ node_templates:
         type: cloudify.openstack.nodes.Server
         properties:
            server: { get_input: server }
-           cloudify_agent: { get_input: cloudify_agent }
         relationships:
             -   type: cloudify.openstack.server_connected_to_security_group
                 target: All_ports_open
@@ -141,7 +138,6 @@ node_templates:
         type: cloudify.openstack.nodes.Server
         properties:
            server: { get_input: server }
-           cloudify_agent: { get_input: cloudify_agent }
         relationships:
             -   type: cloudify.openstack.server_connected_to_security_group
                 target: All_ports_open
@@ -150,7 +146,6 @@ node_templates:
         type: cloudify.openstack.nodes.Server
         properties:
            server: { get_input: server }
-           cloudify_agent: { get_input: cloudify_agent }
         relationships:
             -   type: cloudify.openstack.server_connected_to_security_group
                 target: All_ports_open
@@ -159,7 +154,6 @@ node_templates:
         type: cloudify.openstack.nodes.Server
         properties:
            server: { get_input: server }
-           cloudify_agent: { get_input: cloudify_agent }
         relationships:
             -   type: cloudify.openstack.server_connected_to_security_group
                 target: All_ports_open
@@ -229,7 +223,7 @@ node_templates:
         interfaces:
            cloudify.interfaces.lifecycle:
               create:
-                 implementation: scripts/homer-install.sh
+                 implementation: scripts/homestead-install.sh
                  inputs:
                     dns_ip: { get_input: dns_ip }
               reconfigure: scripts/homestead-start.sh
@@ -243,7 +237,7 @@ node_templates:
         interfaces:
            cloudify.interfaces.lifecycle:
               create:
-                 implementation: scripts/homer-install.sh
+                 implementation: scripts/ralf-install.sh
                  inputs:
                     dns_ip: { get_input: dns_ip }
               reconfigure: scripts/ralf-start.sh
