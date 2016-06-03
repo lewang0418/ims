@@ -9,9 +9,9 @@ imports:
 
 ########################################################
 plugins:
-    dns-plugin:
+    configure-plugin:
         executor: host_agent
-        source: dns-plugin
+        source: configure-plugin
 
 workflows:
   config-dns:
