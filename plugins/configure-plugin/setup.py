@@ -22,16 +22,16 @@ from setuptools import setup
 setup(
 
     # Do not use underscores in the plugin name.
-    name='hss-plugin',
+    name='configure-plugin',
 
     version='3.3.1',
     author='le',
     author_email='le.l.wang@ericsson.com',
-    description='Configure IMS to use external HSS  server',
+    description='Configure IMS to use external DNS',
 
     # This must correspond to the actual packages in the plugin.
     # It will also serve as the plugin prefix for mapping operations to tasks.
-    packages=['hss_plugin'],
+    packages=['configure_plugin'],
 
     license='LICENSE',    
     zip_safe=False,

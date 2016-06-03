@@ -9,16 +9,21 @@ imports:
 
 ########################################################
 plugins:
-    hss-plugin:
+    dns-plugin:
         executor: host_agent
-        source: hss-plugin
+        source: dns-plugin
 
 workflows:
-  config-hss:
-        mapping: hss-plugin.hss_plugin.tasks.config_hss
+  config-dns:
+        mapping: configure-plugin.configure_plugin.tasks.config_dns
         parameters:
             endpoint:
                 description: parameters passed form another deployment
+  config-hss:
+       mapping: configure-plugin.configure_plugin.tasks.config_hss
+       parameters:
+           endpoint:
+               description: parameters passed form another deployment
 
 
 ########################################################
@@ -182,8 +187,8 @@ node_templates:
                  implementation: scripts/bono-install.sh
                  inputs:
                     public_ip: { get_attribute: [ bono_ip, floating_ip_address ] }
-                    dns_ip: { get_input: dns_ip }
-              reconfigure: scripts/bono-start.sh
+              start: scripts/bono-start.sh
+              configure-dns: scripts/bono-dns.sh
               stop: scripts/bono-stop.sh
         relationships:
             -  type: cloudify.relationships.contained_in
@@ -197,8 +202,8 @@ node_templates:
                  implementation: scripts/ellis-install.sh
                  inputs:
                     public_ip: { get_attribute: [ellis_ip, floating_ip_address] }
-                    dns_ip: { get_input: dns_ip }
-              reconfigure: scripts/ellis-start.sh
+              start: scripts/ellis-start.sh
+              configure-dns: scripts/ellis-dns.sh
               stop: scripts/ellis-stop.sh
         relationships:
             -  type: cloudify.relationships.contained_in
@@ -208,11 +213,9 @@ node_templates:
         type: cloudify.nodes.SoftwareComponent
         interfaces:
            cloudify.interfaces.lifecycle:
-              create:
-                 implementation: scripts/homer-install.sh
-                 inputs:
-                    dns_ip: { get_input: dns_ip }
-              reconfigure: scripts/homer-start.sh
+              create: scripts/homer-install.sh
+              start: scripts/homer-start.sh
+              configure-dns: scripts/homer-dns.sh
               stop: scripts/homer-stop.sh
         relationships:
             -  type: cloudify.relationships.contained_in
@@ -222,11 +225,9 @@ node_templates:
         type: cloudify.nodes.SoftwareComponent 
         interfaces:
            cloudify.interfaces.lifecycle:
-              create:
-                 implementation: scripts/homestead-install.sh
-                 inputs:
-                    dns_ip: { get_input: dns_ip }
-              reconfigure: scripts/homestead-start.sh
+              create: scripts/homestead-install.sh
+              start: scripts/homestead-start.sh
+              configure-dns: scripts/homestead-dns.sh
               stop: scripts/homestead-stop.sh
         relationships:
             -  type: cloudify.relationships.contained_in
@@ -236,11 +237,9 @@ node_templates:
         type: cloudify.nodes.SoftwareComponent
         interfaces:
            cloudify.interfaces.lifecycle:
-              create:
-                 implementation: scripts/ralf-install.sh
-                 inputs:
-                    dns_ip: { get_input: dns_ip }
-              reconfigure: scripts/ralf-start.sh
+              create: scripts/ralf-install.sh
+              start: scripts/ralf-start.sh
+              configure-dns: scripts/ralf-dns.sh
               stop: scripts/ralf-stop.sh
         relationships:
             -  type: cloudify.relationships.contained_in
@@ -250,11 +249,9 @@ node_templates:
         type: cloudify.nodes.SoftwareComponent 
         interfaces:
            cloudify.interfaces.lifecycle:
-              create:
-                 implementation: scripts/sprout-install.sh
-                 inputs:
-                    dns_ip: { get_input: dns_ip }
-              reconfigure: scripts/sprout-start.sh
+              create: scripts/sprout-install.sh
+              start: scripts/sprout-start.sh
+              configure-dns: scripts/sprout-dns.sh
               stop: scripts/sprout-stop.sh
         relationships:
             -  type: cloudify.relationships.contained_in

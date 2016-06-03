@@ -1,5 +1,4 @@
 #!/bin/bash
-ctx logger info "Updating HSS ${hss_ip} ${hss_port}"
 
 # Configure and upload /etc/clearwater/shared_config.
 sudo -E bash -c 'cat > /etc/clearwater/shared_config << EOF
@@ -33,6 +32,9 @@ upstream_port=5054
 
 EOF'
 
+/usr/share/clearwater/clearwater-etcd/scripts/wait_for_etcd
+sleep 10
+
 sudo -E /usr/share/clearwater/clearwater-config-manager/scripts/upload_shared_config
 #sudo -E /usr/share/clearwater/clearwater-config-manager/scripts/apply_shared_config --sync
 
@@ -44,7 +46,3 @@ echo "DELETE FROM ellis.numbers WHERE owner_id IS NULL ;" | sudo mysql
 sudo bash -c "export PATH=/usr/share/clearwater/ellis/env/bin:$PATH ;
               cd /usr/share/clearwater/ellis/src/metaswitch/ellis/tools/ ;
               python create_numbers.py --start 6505550000 --count 1000"
-
-
-sudo service clearwater-infrastructure restart
-sudo service ellis stop

@@ -30,9 +30,9 @@ import os
 
 
 @workflow
-def config_hss(ctx, endpoint, **kwargs):
+def config_dns(ctx, endpoint, **kwargs):
     # setting node instance runtime property
-    ctx.logger.info('workflow parameter: {0}:{1}'.format(endpoint['ip_address'], endpoint['port']))
+    ctx.logger.info('workflow parameter: {0}:{1}'.format(endpoint['ip_address']))
     
     nodes = ['bono_app', 'ellis_app', 'homer_app', 'homestead_app', 'ralf_app', 'sprout_app']
     graph = ctx.graph_mode()
@@ -43,13 +43,34 @@ def config_hss(ctx, endpoint, **kwargs):
 
             for instance in node.instances:
                 sequence = graph.sequence()
-                ctx.logger.info('Start operation')
                 sequence.add(
                     instance.send_event('Starting to run operation'),
                     instance.execute_operation('cloudify.interfaces.lifecycle.reconfigure', \
-                        {'hss_ip': endpoint['ip_address'], 'hss_port': endpoint['port']}),
+                        {'dns_ip': endpoint['ip_address']}),
                     instance.send_event('Done running operation')
                 )
-                ctx.logger.info('Stop operation')
     return graph.execute()
 
+
+@workflow
+def config_hss(ctx, endpoint, **kwargs):
+    # setting node instance runtime property
+    ctx.logger.info('workflow parameter: {0}:{1}:[2]' \
+        .format(endpoint['ip_address'], endpoint['port'], endpoint['domain']))
+
+    nodes = ['bono_app', 'ellis_app', 'homer_app', 'homestead_app', 'ralf_app', 'sprout_app']
+    graph = ctx.graph_mode()
+    for node in ctx.nodes:
+        ctx.logger.info('In node: {0}'.format(node.id))
+        if node.id in nodes:
+            ctx.logger.info('In node: {0}'.format(node.id))
+
+            for instance in node.instances:
+                sequence = graph.sequence()
+                sequence.add(
+                    instance.send_event('Starting to run operation'),
+                    instance.execute_operation('cloudify.interfaces.lifecycle.reconfigure', \
+                        {'hss-domain': endpoint['domain'], 'hss-port': endpoint['port']}),
+                    instance.send_event('Done running operation')
+                )
+    return graph.execute()

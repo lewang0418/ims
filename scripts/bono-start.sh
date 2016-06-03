@@ -1,7 +1,6 @@
 #!/bin/bash
-# Update DNS
-ctx logger info "Updating HSS ${hss_ip} ${hss_port}"
 
+# Configure Bono
 sudo -E bash -c 'cat > /etc/clearwater/shared_config << EOF
 # Deployment definitions
 home_domain=example.com
@@ -35,12 +34,3 @@ EOF'
 
 sudo /usr/share/clearwater/clearwater-config-manager/scripts/upload_shared_config
 #sudo /usr/share/clearwater/clearwater-config-manager/scripts/apply_shared_config --sync
-
-
-
-
-
-
-sudo service clearwater-infrastructure restart
-sudo service bono stop
-

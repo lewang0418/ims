@@ -2,7 +2,6 @@
 dns_ip=$(ctx instance runtime_properties dns_ip)
 ctx logger info "remove sprout DNS record...$[dns_ip}"
 
-
 retries=0
 cat > /home/ubuntu/dnsupdatefile << EOF
 server ${dns_ip}

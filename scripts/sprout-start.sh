@@ -1,6 +1,4 @@
 #!/bin/bash
-ctx logger info "Updating HSS ${hss_ip} ${hss_port}"
-
 sudo -E bash -c 'cat > /etc/clearwater/shared_config << EOF
 # Deployment definitions
 home_domain=example.com
@@ -33,5 +31,3 @@ upstream_port=5054
 EOF'
 
 sudo /usr/share/clearwater/clearwater-config-manager/scripts/upload_shared_config
-
-sudo service sprout stop
