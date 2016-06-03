@@ -32,7 +32,7 @@ import os
 @workflow
 def config_dns(ctx, endpoint, **kwargs):
     # setting node instance runtime property
-    ctx.logger.info('workflow parameter: {0}:{1}'.format(endpoint['ip_address']))
+    ctx.logger.info('workflow parameter: {0}'.format(endpoint['ip_address']))
     
     nodes = ['bono_app', 'ellis_app', 'homer_app', 'homestead_app', 'ralf_app', 'sprout_app']
     graph = ctx.graph_mode()
