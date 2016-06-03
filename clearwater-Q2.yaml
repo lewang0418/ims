@@ -32,9 +32,7 @@ inputs:
         default:
             image: ba1fec4c-0330-49e4-81ae-2b1f532a8492 # Ubuntu Server 14.04
             flavor_name: 3
-    dns_ip:
-        description: DNS IP address
-    
+
 ########################################################
 node_types:
     policy_node_type:
