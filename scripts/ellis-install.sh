@@ -28,4 +28,4 @@ log_level=5
 EOF
 
 # Set dns_ip in ctx
-ctx instance runtime-properties public_ip ${public_ip}
+#ctx instance runtime-properties public_ip ${public_ip}

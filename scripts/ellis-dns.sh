@@ -3,7 +3,7 @@
 ctx logger info "Updating DNS ${dns_ip}"
 ctx instance runtime-properties dns_ip ${dns_ip}
 
-public_ip=$(ctx instance runtime_properties public_ip)
+#public_ip=$(ctx instance runtime_properties public_ip)
 
 # Update DNS
 ctx logger info "Updating DNS..."
@@ -23,8 +23,10 @@ cat > /home/ubuntu/dnsupdatefile << EOF
 server ${dns_ip}
 zone example.com
 key example.com 8r6SIIX/cWE6b0Pe8l2bnc/v5vYbMSYvj+jQPP4bWe+CXzOpojJGrXI7iiustDQdWtBHUpWxweiHDWvLIp6/zw==
-update add ellis-0.example.com. 30 A ${public_ip}
-update add ellis.example.com. 30 A ${public_ip}
+#update add ellis-0.example.com. 30 A ${public_ip}
+#update add ellis.example.com. 30 A ${public_ip}
+update add ellis-0.example.com. 30 A $(hostname -I)
+update add ellis.example.com. 30 A $(hostname -I)
 send
 EOF
 

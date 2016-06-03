@@ -71,8 +71,8 @@ node_templates:
 
     bono_ip:
         type: cloudify.openstack.nodes.FloatingIP
-    ellis_ip:
-        type: cloudify.openstack.nodes.FloatingIP
+#    ellis_ip:
+#        type: cloudify.openstack.nodes.FloatingIP
 
     bono_vm:
         type: cloudify.openstack.nodes.Server 
@@ -106,8 +106,8 @@ node_templates:
         properties:
            server: { get_input: server }
         relationships:
-            -   type: cloudify.openstack.server_connected_to_floating_ip
-                target: ellis_ip
+#           -   type: cloudify.openstack.server_connected_to_floating_ip
+#               target: ellis_ip
             -   type: cloudify.openstack.server_connected_to_security_group
                 target: All_ports_open
         
@@ -198,8 +198,8 @@ node_templates:
            cloudify.interfaces.lifecycle:
               create:
                  implementation: scripts/ellis-install.sh
-                 inputs:
-                    public_ip: { get_attribute: [ellis_ip, floating_ip_address] }
+#                 inputs:
+#                    public_ip: { get_attribute: [ellis_ip, floating_ip_address] }
               start: scripts/ellis-start.sh
               configure-dns: scripts/ellis-dns.sh
               stop: scripts/ellis-stop.sh
