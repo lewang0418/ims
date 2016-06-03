@@ -30,3 +30,4 @@ EOF
 
 # Set public_ip in ctx
 ctx instance runtime-properties public_ip ${public_ip}
+$public_ip > /home/ubuntu/public_ip
