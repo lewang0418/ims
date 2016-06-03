@@ -260,4 +260,3 @@ outputs:
     description: vIMS application endpoint
     value:
       bono_address: { get_attribute: [ bono_ip, floating_ip_address ] }
-      ellis_address: { get_attribute: [ ellis_ip, floating_ip_address ] }
