@@ -3,9 +3,9 @@ ctx logger info "Updating DNS ${dns_ip}"
 # Set public_ip in ctx
 ctx instance runtime-properties dns_ip ${dns_ip}
 public_ip=$(ctx instance runtime_properties public_ip)
-echo "$public_ip"
+ctx logger info " ip ${public_ip}"
 public_ip=`cat /home/ubuntu/public_ip`
-echo "$public_ip"
+ctx logger info " ip ${public_ip}"
 
 cat > /home/ubuntu/resolv.conf << EOF
 nameserver ${dns_ip}
