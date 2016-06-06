@@ -45,7 +45,7 @@ def config_dns(ctx, endpoint, **kwargs):
                 sequence = graph.sequence()
                 sequence.add(
                     instance.send_event('Starting to run operation'),
-                    instance.execute_operation('cloudify.interfaces.lifecycle.reconfigure', \
+                    instance.execute_operation('cloudify.interfaces.lifecycle.configure-dns', \
                         {'dns_ip': endpoint['ip_address']}),
                     instance.send_event('Done running operation')
                 )
@@ -69,7 +69,7 @@ def config_hss(ctx, endpoint, **kwargs):
                 sequence = graph.sequence()
                 sequence.add(
                     instance.send_event('Starting to run operation'),
-                    instance.execute_operation('cloudify.interfaces.lifecycle.reconfigure', \
+                    instance.execute_operation('cloudify.interfaces.lifecycle.configure-hss', \
                         {'hss-domain': endpoint['domain'], 'hss-port': endpoint['port']}),
                     instance.send_event('Done running operation')
                 )
