@@ -32,6 +32,9 @@ inputs:
         default:
             image: ba1fec4c-0330-49e4-81ae-2b1f532a8492 # Ubuntu Server 14.04
             flavor_name: 3
+    security_group:
+        description: >
+          The name of security group
 
 ########################################################
 node_types:
@@ -165,7 +168,7 @@ node_templates:
         type: cloudify.openstack.nodes.SecurityGroup
         properties:
             security_group:
-                name: All_ports_open
+                name: { get_input: security_group }
             rules: 
                 - remote_ip_prefix: 0.0.0.0/0
                   port_range_min: 1
