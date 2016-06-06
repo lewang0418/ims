@@ -32,7 +32,7 @@ import os
 @workflow
 def config_dns(ctx, endpoint, **kwargs):
     # setting node instance runtime property
-    ctx.logger.info('workflow parameter: {0}'.format(endpoint))
+    ctx.logger.info('workflow parameter: {0}'.format(endpoint["ip_address"]))
     
     nodes = ['bono_app', 'ellis_app', 'homer_app', 'homestead_app', 'ralf_app', 'sprout_app']
     graph = ctx.graph_mode()
@@ -46,7 +46,7 @@ def config_dns(ctx, endpoint, **kwargs):
                 sequence.add(
                     instance.send_event('Starting to run operation'),
                     instance.execute_operation('cloudify.interfaces.lifecycle.configure-dns', \
-                        {'dns_ip': endpoint}),
+                        {'dns_ip': endpoint["ip_address"]}),
                     instance.send_event('Done running operation')
                 )
     return graph.execute()
